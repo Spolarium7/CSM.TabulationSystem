@@ -1,0 +1,123 @@
+﻿.judge-buffallo, .judge-cat, .judge-penguin, .judge-wolf, .judge-seabird,
+.judge-hound, .judge-hare, .judge-hyena, .judge-crocodile, .judge-rabbit,
+.judge-eagle, .judge-koala, .judge-lion, .judge-bunny, .judge-kitty,
+.judge-owl, .judge-fox, .judge-crane, .judge-siamese, .judge-dog,
+.judge-monkey, .judge-lama, .judge-panda, .judge-parrot, .judge-tiger {
+    background-image: url('../images/judge-icons.jpg');
+    background-repeat: no-repeat;
+    background-size: 500%;
+}
+
+.judge-buffallo {
+    background-position: 0 0;
+}
+
+.judge-cat {
+    background-position: 25% 0;
+}
+
+.judge-penguin {
+    background-position: 50% 0;
+}
+
+.judge-wolf {
+    background-position: 75% 0;
+}
+
+.judge-seabird {
+    background-position: 100% 0;
+}
+
+.judge-seabird {
+    background-position: 100% 0;
+}
+
+.judge-hound {
+    background-position: 0 25%;
+}
+
+.judge-hare {
+    background-position: 25% 25%;
+}
+
+.judge-hyena {
+    background-position: 50% 25%;
+}
+
+.judge-crocodile {
+    background-position: 75% 25%;
+}
+
+.judge-rabbit {
+    background-position: 100% 25%;
+}
+
+.judge-eagle {
+    background-position: 0 50%;
+}
+
+.judge-koala {
+    background-position: 25% 50%;
+}
+
+.judge-lion {
+    background-position: 50% 50%;
+}
+
+.judge-bunny {
+    background-position: 75% 50%;
+}
+
+.judge-kitty {
+    background-position: 100% 50%;
+}
+
+.judge-owl {
+    background-position: 0 75%;
+}
+
+.judge-fox {
+    background-position: 25% 75%;
+}
+
+.judge-crate {
+    background-position: 50% 75%;
+}
+
+.judge-siamese {
+    background-position: 75% 75%;
+}
+
+.judge-dog {
+    background-position: 100% 75%;
+}
+
+.judge-monkey {
+    background-position: 0 100%;
+}
+
+.judge-lama {
+    background-position: 25% 100%;
+}
+
+.judge-panda {
+    background-position: 50% 100%;
+}
+
+.judge-parrot {
+    background-position: 75% 100%;
+}
+
+.judge-tiger {
+    background-position: 100% 100%;
+}
+
+.judge-in-list {
+    height: 50px;
+    width: 50px;
+    display: inline-block;
+}
+
+.table td{
+    vertical-align:middle;
+}

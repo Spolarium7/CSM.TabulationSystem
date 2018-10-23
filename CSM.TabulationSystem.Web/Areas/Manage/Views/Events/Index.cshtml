@@ -1,0 +1,145 @@
+﻿@using CSM.TabulationSystem.Web.Infrastructure.Data.Models;
+@model CSM.TabulationSystem.Web.Areas.Manage.ViewModels.Events.IndexViewModel;
+@{
+    Layout = "~/areas/manage/views/shared/_indices.cshtml";
+}
+
+@section tableHead{
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="table-responsive table--no-card m-b-30">
+                <a href="~/manage/events/create" class="btn btn-lg btn-info btn-block">
+                    <i class="fa fa-plus"></i>&nbsp;
+                    <span>Create Event</span>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.Events.Items.Count > 0)
+{
+    <table class="table table-borderless table-striped table-earning">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (Event thisEvent in Model.Events.Items)
+                {
+                    <tr>
+                        <td>@thisEvent.Title</td>
+                        <td>@thisEvent.Timestamp.ToString("dd MMMM yyyy")</td>
+                        <td>
+                            <a href="~/manage/events/update/@thisEvent.Id" title="Update Event"><button type="button" class="btn"><i class="fas fa-pen-square"></i></button></a>
+                            @{
+                                if (thisEvent.IsLocked == false)
+                                {
+                                    <a href="#" onclick="confirmLockEvent('@thisEvent.Id', '@thisEvent.Title')" title="Deactivate Event"><button type="button" class="btn"><i class="fas fa-lock"></i></button></a>
+                                }
+                                else
+                                {
+                                    <a href="#" onclick="confirmUnLockEvent('@thisEvent.Id', '@thisEvent.Title')" title="Activate Event"><button type="button" class="btn"><i class="fas fa-lock-open"></i></button></a>
+                                }
+                            }
+                            <a href="#" onclick="confirmDeleteEvent('@thisEvent.Id', '@thisEvent.Title')" title="Delete Event"><button type="button" class="btn"><i class="fas fa-times"></i></button></a>
+                            <a href="~/manage/events/@thisEvent.Id/criteria" title="Criteria of @thisEvent.Title"><button type="button" class="btn"><i class="fas fa-list"></i></button></a>
+                            <a href="~/manage/events/@thisEvent.Id/judges" title="Judges of @thisEvent.Title"><button type="button" class="btn"><i class="fas fa-user-secret"></i></button></a>
+                            <a href="~/manage/events/@thisEvent.Id/contestants" title="Contestants in @thisEvent.Title"><button type="button" class="btn"><i class="fas fa-user-circle"></i></button></a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item"><span class="form-control-plaintext">Page&nbsp;&nbsp;&nbsp;</span></li>
+                            <li class="page-item"><input type="number" value="@Model.Events.PageIndex" class="form-control" style="width:50px;" onKeydown="javascript: if(event.keyCode == 13 && isNaN(parseInt($(this).val()))==false) window.location='/home/index?pageIndex=' + (isNaN(parseInt($(this).val())) ? 1 : parseInt($(this).val()));" /></li>
+                            <li class="page-item"><span class="form-control-plaintext">&nbsp;&nbsp;&nbsp;of @Model.Events.PageCount&nbsp;&nbsp;&nbsp;</span></li>
+                            <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a></li>
+                        </ul>
+                    </nav>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+
+@section extras{
+    <div class="modal" tabindex="-1" role="dialog" id="modal-event-status">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><span class="modal-event-status-label"></span> Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to <span class="modal-event-status-label"></span> <span id="modal-event-status-eventname"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modal-event-status-confirm"><button type="button" class="btn btn-primary"><span class="modal-event-status-label"></span> Event</button></a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modal-delete-event">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <span id="modal-delete-event-eventname"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modal-delete-event-confirm"><button type="button" class="btn btn-danger">Delete Event</button></a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section pageScripts{
+    <script type="text/javascript">
+        function confirmUnlockEvent(eventId, eventName) {
+            $("#modal-event-status-eventname").html(eventName);
+            $(".modal-event-status-label").html("Unlock");
+            $("#modal-event-status-confirm").attr("href", "/manage/events/change-status/unlocked/" + eventId);
+            $("#modal-event-status").modal("show");
+        }
+
+        function confirmLockEvent(eventId, eventName) {
+            $("#modal-event-status-eventname").html(eventName);
+            $(".modal-event-status-label").html("Lock");
+            $("#modal-event-status-confirm").attr("href", "/manage/events/change-status/locked/" + eventId);
+            $("#modal-event-status").modal("show");
+        }
+
+        function confirmDeleteEvent(eventId, eventName) {
+            $("#modal-delete-event-eventname").html(eventName);
+            $("#modal-delete-event-confirm").attr("href", "/manage/events/delete/" + eventId);
+            $("#modal-delete-event").modal("show");
+        }
+    </script>
+}
+

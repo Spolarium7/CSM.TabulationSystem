@@ -1,0 +1,188 @@
+﻿@using CSM.TabulationSystem.Web.Areas.Manage.ViewModels.Judges;
+@model CSM.TabulationSystem.Web.Areas.Manage.ViewModels.Judges.IndexViewModel;
+
+@{
+    Layout = "~/areas/manage/views/shared/_indices.cshtml";
+}
+
+@section tableHead{
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="table-responsive table--no-card m-b-30">
+                <a href="#" class="btn btn-lg btn-info btn-block" onclick="addJudge()">
+                    <i class="fa fa-plus"></i>&nbsp;
+                    <span>Add Judge</span>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@{ 
+    if (Model.Judges != null) {
+        if (Model.Judges.Items.Count > 0)
+        {
+    <table class="table table-borderless table-striped table-earning">
+        <thead>
+            <tr>
+                <th colspan="2">Alias</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (JudgeViewModel judge in Model.Judges.Items)
+                {
+                    <tr>
+                        <td><span class="judge-in-list judge-@judge.Totem"></span></td>
+                        <td>Judge @judge.Totem.ToUpper()</td>
+                        <td>@judge.FullName</td>
+                        <td>
+                            <a href="#" onclick="confirmResetEventKey('@judge.JudgeId', '@judge.FullName')" title="Reset Event Key"><button type="button" class="btn"><i class="fas fa-key"></i></button></a>
+                            <a href="#" onclick="confirmRemoveJudge('@judge.JudgeId', '@judge.FullName')" title="Remove Judge"><button type="button" class="btn"><i class="fas fa-times"></i></button></a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item"><span class="form-control-plaintext">Page&nbsp;&nbsp;&nbsp;</span></li>
+                            <li class="page-item"><input type="number" value="@Model.Judges.PageIndex" class="form-control" style="width:50px;" onKeydown="javascript: if(event.keyCode == 13 && isNaN(parseInt($(this).val()))==false) window.location='/manage/events/@Model.EventId/judges?pageIndex=' + (isNaN(parseInt($(this).val())) ? 1 : parseInt($(this).val()));" /></li>
+                            <li class="page-item"><span class="form-control-plaintext">&nbsp;&nbsp;&nbsp;of @Model.Judges.PageCount&nbsp;&nbsp;&nbsp;</span></li>
+                            <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a></li>
+                        </ul>
+                    </nav>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+        }
+    }
+}
+
+@section extras{
+    <div class="modal" tabindex="-1" role="dialog" id="modal-add-judge">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Judge</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="~/manage/events/judges/add" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" value="@Model.EventId" name="EventId" />
+                        <select id="select-user" name="UserId" placeholder="User"></select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modal-reset-eventkey">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Event Key</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reset the event key of <span id="modal-reset-eventkey-username"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modal-reset-eventkey-confirm"><button type="button" class="btn btn-primary">Reset Event Key</button></a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modal-remove-judge">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Remove Judge</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to remove <span id="modal-remove-judge-username"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modal-remove-judge-confirm"><button type="button" class="btn btn-danger">Remove Judge</button></a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section pageScripts{
+    <script src="~/vendor/selectize/dist/js/selectize.js"></script>
+    <script type="text/javascript">
+        function addJudge() {
+            initSelectUser();
+            $("#modal-add-judge").modal("show");
+        }
+
+        function confirmRemoveJudge(judgeId, userName) {
+            $("#modal-remove-judge-username").html(userName);
+            $("#modal-remove-judge-confirm").attr("href", "/manage/events/judges/delete/" + judgeId);
+            $("#modal-remove-judge").modal("show");
+        }
+
+        function confirmResetEventKey(judgeId, userName) {
+            $("#modal-reset-eventkey-username").html(userName);
+            $("#modal-reset-eventkey-confirm").attr("href", "/manage/events/judges/reset-eventkey/" + judgeId);
+            $("#modal-reset-eventkey").modal("show");
+        }
+
+        function initSelectUser() {
+            try {
+                var selectUser, $selectUser;
+                $selectUser = $('#select-user').selectize();
+                selectUser = $selectUser[0];
+                selectUser.selectize.destroy();
+            }
+            catch (err) {
+                console.log(err);
+            };
+
+            var selectUser, $selectUser;
+
+            $selectUser = $('#select-user').selectize({
+                maxItems: 1,
+                preload: true,
+                load: function (query, callback) {
+                    $.ajax({
+                        url: '/manage/events/judges/lookup?eventId=@Model.EventId&query=' + encodeURIComponent(query),
+                        success: function (response) { callback(response.slice(0, 10)); }
+                    });
+                }
+            });
+
+            selectUser = $selectUser.selectize;
+        }
+    </script>
+}
+
+@section pageStyles{
+    <link href="~/vendor/selectize/dist/css/selectize.css" rel="stylesheet" />
+}

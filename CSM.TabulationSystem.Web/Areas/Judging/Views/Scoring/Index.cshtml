@@ -1,0 +1,99 @@
+﻿@using CSM.TabulationSystem.Web.Infrastructure.Data.Models;
+@model CSM.TabulationSystem.Web.Areas.Judging.ViewModels.Scoring.IndexViewModel;
+
+@{
+    Layout = "~/areas/judging/views/shared/_scoresheet.cshtml";
+}
+
+@{
+    if (Model.ContestantScores != null)
+    {
+        if (Model.ContestantScores.Count > 0)
+        {
+            <table class="table table-borderless table-striped table-earning">
+                <thead>
+                    <tr>
+                        <th>Contestant</th>
+                        @{
+                            if (Model.Criteria != null)
+                            {
+                                if (Model.Criteria.Count > 0)
+                                {
+                                    foreach (Criterion criterion in Model.Criteria)
+                                    {
+                                        <th>@criterion.Name (@criterion.Percentage.ToString("#.00"))</th>
+                                    }
+                                }
+                            }
+                        }
+                        <th><strong>Total</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        foreach (var contestantScore in Model.ContestantScores)
+                        {
+                            <tr>
+                                <td>@contestantScore.ContestantName</td>
+                                @{
+                                    var total = decimal.Parse("0.00");
+                                    if (Model.Criteria != null)
+                                    {
+                                        if (Model.Criteria.Count > 0)
+                                        {
+                                            foreach (Criterion criterion in Model.Criteria)
+                                            {
+                                                total = total + decimal.Parse(contestantScore.Scores[criterion.Name.ToLower()].ToString("0.00"));
+                                                <td><input type="number" data-member-percentage="@criterion.Percentage" data-member-criterion="@criterion.Id" data-member-contestant="@contestantScore.ContestantId" value="@contestantScore.Scores[criterion.Name.ToLower()].ToString("0.00")" class="score score-@contestantScore.ContestantId" /></td>
+                                            }
+                                        }
+                                    }
+                                }
+                                <td><strong id="total-@contestantScore.ContestantId">@total.ToString("0.00")</strong></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+    }
+}
+
+@section pageScripts{
+    <script>
+        $(".score").change(function () {
+            if (parseFloat($(this).val()) > parseFloat($(this).attr("data-member-percentage"))){
+                alert("Please enter an amount not greater than " + $(this).attr("data-member-percentage"));
+                return;
+            }
+
+            var contestantId = $(this).attr("data-member-contestant");
+
+            $.ajax({
+                type: "POST",
+                url: "/judging/scoring/upsert-score",
+                data: {
+                    criterionId: $(this).attr("data-member-criterion"),
+                    contestantId: contestantId,
+                    eventId: "@Model.EventId",
+                    points: $(this).val()
+                },
+                dataType: "json"
+            }).done(function (obj) {
+                var totalScore = 0;
+                $(".score-" + contestantId).each(function (index) {
+                    totalScore = totalScore + parseFloat($(this).val());
+                });
+                $("#total-" + contestantId).html(totalScore.toFixed(2));
+            });
+        });
+    </script>
+}
+
+@section tableHead{
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>@Model.EventName</h2>
+        </div>
+    </div>
+}

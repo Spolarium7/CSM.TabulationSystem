@@ -1,0 +1,138 @@
+﻿@using CSM.TabulationSystem.Web.Infrastructure.Data.Models;
+@model CSM.TabulationSystem.Web.Areas.Manage.ViewModels.Contestants.IndexViewModel;
+@{
+    Layout = "~/areas/manage/views/shared/_indices.cshtml";
+}
+
+@section tableHead{
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="table-responsive table--no-card m-b-30">
+                <a href="~/manage/events/@Model.EventId/contestants/create" class="btn btn-lg btn-info btn-block">
+                    <i class="fa fa-plus"></i>&nbsp;
+                    <span>Add Contestant</span>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.Contestants.Items.Count > 0)
+{
+<table class="table table-borderless table-striped table-earning">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (Contestant contestant in Model.Contestants.Items)
+            {
+            <tr>
+                <td>@contestant.Name</td>
+                <td>@contestant.Status.ToString()</td>
+                <td>
+                    <a href="~/manage/events/contestants/update/@contestant.Id" title="Update Contestant"><button type="button" class="btn"><i class="fas fa-pen-square"></i></button></a>
+                    <a href="#" onclick="confirmChangeStatus('@contestant.Id', '@contestant.Name', '@contestant.Status.ToString()')" title="Change Status"><button type="button" class="btn"><i class="fas fa-asl-interpreting"></i></button></a>
+                    <a href="#" onclick="confirmDeleteContestant('@contestant.Id', '@contestant.Name')" title="Delete Contestant"><button type="button" class="btn"><i class="fas fa-times"></i></button></a>
+                </td>
+            </tr>
+            }
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item"><span class="form-control-plaintext">Page&nbsp;&nbsp;&nbsp;</span></li>
+                        <li class="page-item"><input type="number" value="@Model.Contestants.PageIndex" class="form-control" style="width:50px;" onKeydown="javascript: if(event.keyCode == 13 && isNaN(parseInt($(this).val()))==false) window.location='/manage/events/@Model.EventId/contestants?pageIndex=' + (isNaN(parseInt($(this).val())) ? 1 : parseInt($(this).val()));" /></li>
+                        <li class="page-item"><span class="form-control-plaintext">&nbsp;&nbsp;&nbsp;of @Model.Contestants.PageCount&nbsp;&nbsp;&nbsp;</span></li>
+                        <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&laquo;</span></a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a></li>
+                    </ul>
+                </nav>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+}
+
+
+@section extras{
+    <div class="modal" tabindex="-1" role="dialog" id="modal-contestant-status">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Status from <span class="modal-contestant-status-label"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Change the status of <span id="modal-contestant-status-contestantname"></span> from <span class="modal-contestant-status-label"></span> to:</p>
+                    <select id="modal-contestant-status-new-status">
+                        <option value="Active">Active</option>
+                        <option value="OnHold">On Hold</option>
+                        <option value="Forfeited">Forfeited</option>
+                        <option value="Disqualified">Disqualified</option>
+                    </select>
+                    <input type="hidden" id="modal-contestant-status-id"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="changeStatus()">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="modal-delete-contestant">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Contestant</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <span id="modal-delete-contestant-contestantname"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modal-delete-contestant-confirm"><button type="button" class="btn btn-danger">Delete Contestant</button></a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section pageScripts{
+    <script type="text/javascript">
+        function confirmChangeStatus(contestantId, contestantName, status) {
+            $("#modal-contestant-status-contestantname").html(contestantName);
+            $(".modal-contestant-status-label").html(status);
+            $("#modal-contestant-status-id").val(contestantId);
+            $("#modal-contestant-status-new-status option[value='" + status + "']").attr("selected", "selected");
+            $("#modal-contestant-status").modal("show");
+        }
+
+        function changeStatus() {
+            window.location = "/manage/events/contestants/change-status/" + $("#modal-contestant-status-new-status").val() + "/" + $("#modal-contestant-status-id").val();
+        }
+
+        function confirmDeleteContestant(contestantId, contestantName) {
+            $("#modal-delete-contestant-contestantname").html(contestantName);
+            $("#modal-delete-contestant-confirm").attr("href", "/manage/events/contestants/delete/" + contestantId);
+            $("#modal-delete-contestant").modal("show");
+        }
+    </script>
+}
+

@@ -1,0 +1,99 @@
+﻿@using CSM.TabulationSystem.Web.Infrastructure.Authentication
+@{
+    Layout = null;
+}
+
+<header class="header-desktop3">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="header-wrap header__navbar">
+                <div class="form-header">
+                    <ul class="list-unstyled list-inline">
+                        <li class="list-inline-item">
+                            <a href="~/home/index" class="first_item">
+                                <i class="fas fa-trophy"></i>
+                                <span class="bot-line"></span>Final Results
+                            </a>
+                        </li>
+                        @*<li class="list-inline-item">
+                            <a href="#">
+                                <i class="fas fa-id-card"></i>
+                                <span class="bot-line"></span>Score cards
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#">
+                                <i class="fas fa-bar-chart"></i>
+                                <span class="bot-line"></span>By Category Ranking
+                            </a>
+                        </li>*@
+                        <li class="list-inline-item">
+                            <a href="~/judging/scoring/index">
+                                <i class="fas fa-archive"></i>
+                                <span class="bot-line"></span>My Scores
+                            </a>
+                        </li>
+                        <li class="has-sub list-inline-item">
+                            <a href="#">
+                                <i class="fas fa-list"></i>Manage
+                                <span class="bot-line"></span>
+                            </a>
+                            <ul class="header3-sub-list list-unstyled">
+                                <li>
+                                    <a href="~/manage/users">Users</a>
+                                </li>
+                                <li>
+                                    <a href="~/manage/events">Events</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="header-button">
+                    <div class="account-wrap">
+                        <div class="account-item clearfix js-item-menu">
+                            <div class="image">
+                                <img src="/images/icon/avatar-01.png" alt="@WebUser.FullName" />
+                            </div>
+                            <div class="content">
+                                <a class="js-acc-btn" href="#">@WebUser.FullName</a>
+                            </div>
+                            <div class="account-dropdown js-dropdown">
+                                <div class="info clearfix">
+                                    <div class="image">
+                                        <a href="#">
+                                            <img src="/images/icon/avatar-01.png" alt="@WebUser.FullName" />
+                                        </a>
+                                    </div>
+                                    <div class="content">
+                                        <h5 class="name">
+                                            <a href="#">@WebUser.FullName</a>
+                                        </h5>
+                                        <span class="email">@WebUser.EmailAddress</span>
+                                    </div>
+                                </div>
+                                <div class="account-dropdown__body">
+                                    <div class="account-dropdown__item">
+                                        <a href="~/account/update-profile">
+                                            <i class="zmdi zmdi-account"></i>Account
+                                        </a>
+                                    </div>
+                                    <div class="account-dropdown__item">
+                                        <a href="~/account/change-password">
+                                            <i class="zmdi zmdi-lock"></i>Change Password
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="account-dropdown__footer">
+                                    <a href="~/account/logout">
+                                        <i class="zmdi zmdi-power"></i>Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

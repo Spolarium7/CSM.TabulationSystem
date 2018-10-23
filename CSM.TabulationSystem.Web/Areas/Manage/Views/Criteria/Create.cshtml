@@ -1,0 +1,32 @@
+﻿@model CSM.TabulationSystem.Web.Areas.Manage.ViewModels.Criteria.CreateViewModel
+@{
+    ViewData["Title"] = "Create Contestant";
+    Layout = "~/areas/manage/views/shared/_forms.cshtml";
+}
+
+<div class="card-header"><a href="~/manage/events/@Model.EventId/criteria"><span class="fa fa-arrow-left"></span> back</a></div>
+<div class="card-body">
+    <div class="card-title">
+        <h3 class="text-center title-2">Create a new Criterion</h3>
+    </div>
+    <hr>
+    <form action="~/manage/events/criteria/create" method="post">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+        <div class="form-group">
+            <input type="hidden" name="EventId" value="@Model.EventId" />
+            <label for="name" class="control-label mb-1">Name</label>
+            <input type="text" class="form-control" id="name" name="Name" aria-describedby="nameHelp" placeholder="Enter name">
+        </div>
+        <div class="form-group">
+            <label for="percentage" class="control-label mb-1">Percentage</label>
+            <input type="text" class="form-control" id="percentage" name="Percentage" aria-describedby="percentageHelp" placeholder="Enter Percentage">
+        </div>
+        <div class="form-group">
+            <label for="description" class="control-label mb-1">Description</label>
+            <textarea for="description" name="Description" rows="4" class="form-control"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="~/manage/events/@Model.EventId/criteria" class="btn btn-danger">Cancel</a>
+    </form>
+</div>

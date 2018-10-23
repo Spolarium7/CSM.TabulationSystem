@@ -1,0 +1,24 @@
+﻿
+@{
+    Layout = "~/views/shared/_layout.cshtml";
+}
+
+<partial name="~/views/shared/_header.cshtml" />
+<!-- PAGE CONTENT-->
+<div class="page-content--bgf7">
+    @RenderSection("breadcrumbs", false)
+    @RenderSection("welcome", false)
+    @RenderBody()
+</div>
+
+@section pageScripts{
+    @RenderSection("pageScripts", false);
+}
+
+@section pageStyles{
+    @RenderSection("pageStyles", false)
+}
+
+@section extras{
+    @RenderSection("extras", false);
+}

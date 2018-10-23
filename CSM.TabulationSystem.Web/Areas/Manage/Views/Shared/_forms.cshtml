@@ -1,0 +1,29 @@
+﻿
+@{
+    Layout = "~/views/shared/_layout.cshtml";
+}
+
+@Html.Partial("~/areas/manage/views/shared/_sideMenu.cshtml")
+
+<div class="page-container">
+    @Html.Partial("~/areas/manage/views/shared/_header.cshtml")
+    <div class="main-content">
+        <div class="section__content section__content--p30">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            @RenderBody()
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pageScripts{
+    @RenderSection("pageScripts", false);
+}
+
+

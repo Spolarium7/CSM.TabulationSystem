@@ -1,0 +1,27 @@
+﻿
+@{
+    Layout = "~/views/shared/_layout.cshtml";
+}
+
+<div class="page-content--bge5">
+    <div class="container">
+        <div class="login-wrap">
+            <div class="login-content">
+                <div class="login-logo">
+                    <a href="#">
+                        <img src="~/images/icon/logo-black-grank.png" alt="GRank System">
+                    </a>
+                </div>
+                <div class="login-form">
+                    @RenderBody()
+                    <div class="register-link">
+                        <p>
+                            @RenderSection("forgotPasswordLink", false)
+                            Copyright © @DateTime.Now.Year - <strong>GOSHEN JIMENEZ</strong> - CSM Bataan Apps
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

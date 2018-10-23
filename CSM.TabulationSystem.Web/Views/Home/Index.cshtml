@@ -1,0 +1,189 @@
+﻿@using CSM.TabulationSystem.Web.Infrastructure.Data.Models;
+@using CSM.TabulationSystem.Web.ViewModels.Home;
+@model CSM.TabulationSystem.Web.ViewModels.Home.IndexViewModel;
+
+@{
+    Layout = "~/views/shared/_public.cshtml";
+
+}
+
+@section breadcrumbs{
+    <section class="au-breadcrumb2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="au-breadcrumb-content">
+                        <div class="au-breadcrumb-left">
+                            <span class="au-breadcrumb-span">You are here:</span>
+                            <ul class="list-unstyled list-inline au-breadcrumb__list">
+                                <li class="list-inline-item active">
+                                    <a href="#">Home</a>
+                                </li>
+                                <li class="list-inline-item seprate">
+                                    <span>/</span>
+                                </li>
+                                <li class="list-inline-item">Dashboard</li>
+                            </ul>
+                        </div>
+                        <div class="au-form-icon--sm">
+                            <select id="selectedEvent" onchange="goToEvent()" class="form-control">
+                                <option value="">Choose event</option>
+                                @{
+                                    foreach (TextValuePair ev in Model.Events)
+                                    {
+                                        <option value="@(ev.Id)">@ev.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+
+
+
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>@Model.EventName</h3>
+                    <br/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-responsive table--no-card m-b-20">
+                        @{
+                            if (Model.ContestantScores != null)
+                            {
+                                if (Model.ContestantScores.Count > 0)
+                                {
+                                    <table class="table table-borderless table-striped table-earning">
+                                        <thead>
+                                            <tr>
+                                                <th>Contestant</th>
+                                                @{
+                                                    if (Model.Criteria != null)
+                                                    {
+                                                        if (Model.Criteria.Count > 0)
+                                                        {
+                                                            foreach (Criterion criterion in Model.Criteria)
+                                                            {
+                                                                <th>@criterion.Name (@criterion.Percentage.ToString("#.00"))</th>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <th><strong>Total</strong></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                foreach (var contestantScore in Model.ContestantScores)
+                                                {
+                                                    <tr>
+                                                        <td>@contestantScore.ContestantName</td>
+                                                        @{
+                                                            if (Model.Criteria != null)
+                                                            {
+                                                                if (Model.Criteria.Count > 0)
+                                                                {
+                                                                    foreach (Criterion criterion in Model.Criteria)
+                                                                    {
+                                                                        <td><a href="#" onclick="showBreakdown('@contestantScore.ContestantId', '@contestantScore.ContestantName', '@criterion.Id', '@criterion.Name','@criterion.Percentage')">@contestantScore.Scores[criterion.Name.ToLower()].ToString("0.00")</a></td>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        <td><strong id="total-@contestantScore.ContestantId">@contestantScore.AverageScore.ToString("0.00")</strong></td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--MODAL-->
+<div class="modal" tabindex="-1" role="dialog" id="modal-show-breakdown">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Score breakdown</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><span class="modal-show-breakdown-criterion-name"></span> Scores for <span class="modal-show-breakdown-contestant-name"></span> Percent : <span class="modal-show-breakdown-criterion-percentage"></span></p>
+                <br />
+                <br />
+                <table class="table table-borderless table-striped table-earning">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Judge</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-show-breakdown-score-table-body"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Okay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pageScripts{
+    <script>
+        function showBreakdown(contestantId, contestantName, criterionId, criterionName, criterionPercentage) {
+            $(".modal-show-breakdown-contestant-name").html(contestantName);
+            $(".modal-show-breakdown-criterion-name").html(criterionName);
+            $(".modal-show-breakdown-criterion-percentage").html(parseFloat(criterionPercentage).toFixed(2));
+
+            $.ajax({
+                type: "GET",
+                url: "/home/score-breakdown?contestantId=" + contestantId + "&criterionId=" + criterionId
+            }).done(function (obj) {
+                var totalScore = 0;
+                var scoreCount = 0;
+                $("#modal-show-breakdown-score-table-body").empty();
+                $(obj).each(function (index, score) {
+                    var markup = "<tr><td><span class='judge-in-list judge-" + score.judgeTotem + "'></span></td>";
+                    markup = markup + "<td>Judge " + score.judgeTotem + "</td>";
+                    markup = markup + "<td>" + parseFloat(score.points).toFixed(2) + "</td></tr>";
+                    scoreCount = scoreCount + 1;
+                    totalScore = parseFloat(parseFloat(totalScore).toFixed(2)) + parseFloat(parseFloat(score.points).toFixed(2));
+                    $("#modal-show-breakdown-score-table-body").append(markup);
+                });
+
+                $("#modal-show-breakdown-score-table-body").append("<td></td><td><strong>Average</strong></td><td><strong>" + parseFloat(parseFloat(totalScore) / parseFloat(scoreCount)).toFixed(2) + "</strong></td>");
+
+                $("#modal-show-breakdown").modal("show");
+            });
+        }
+
+        function goToEvent() {
+            window.location = "/home/index?eventId=" + $("#selectedEvent").val();
+        }
+    </script>
+}

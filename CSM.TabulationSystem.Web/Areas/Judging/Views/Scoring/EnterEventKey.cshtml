@@ -1,0 +1,16 @@
+﻿@model CSM.TabulationSystem.Web.Areas.Judging.ViewModels.Scoring.EnterEventKeyViewModel
+@{
+    Layout = "~/views/shared/_publicForm.cshtml";
+}
+
+<form action="~/judging/scoring/enter-event-key" method="post">
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <div class="form-group">
+        <label>Please enter your Event Key</label>
+        <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl"/>
+        <input class="au-input au-input--full" type="password" name="EventKey" placeholder="Event Key">
+    </div>
+    <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">Enter</button>
+    <a href="~/home/index"><-- back home</a>
+</form>

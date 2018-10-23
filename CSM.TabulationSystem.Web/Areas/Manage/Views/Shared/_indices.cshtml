@@ -1,0 +1,42 @@
+﻿
+@{
+    Layout = "~/views/shared/_layout.cshtml";
+}
+
+@Html.Partial("~/areas/manage/views/shared/_sideMenu.cshtml")
+
+<div class="page-container">
+    @Html.Partial("~/areas/manage/views/shared/_header.cshtml")
+    <div class="main-content">
+        <div class="section__content section__content--p30">
+            <div class="container-fluid">
+                @RenderSection("tableHead", false)
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-responsive table--no-card m-b-20">
+                            @RenderBody()
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pageScripts{
+    @RenderSection("pageScripts", false)
+}
+
+@section pageStyles{
+    @RenderSection("pageStyles", false)
+}
+
+@section extras{
+    @RenderSection("extras", false);
+}
+
